@@ -182,8 +182,8 @@ import { suiteList } from '../data/toolSuites.js'
 
 const copy = {
   workbench: '\u5a92\u4f53\u5de5\u4f5c\u53f0',
-  heroTitle: '\u5904\u7406\u5a92\u4f53\uff0c\u5c11\u7ed5\u8def\u3002',
-  heroText: '\u4e0a\u4f20\u6587\u4ef6\uff0c\u9009\u62e9\u64cd\u4f5c\uff0c\u5b8c\u6210\u540e\u4e0b\u8f7d\u3002\u89c6\u9891\u3001\u56fe\u7247\u3001\u97f3\u9891\u90fd\u5728\u4e00\u4e2a\u754c\u9762\u91cc\u3002',
+  heroTitle: '媒体处理更有章法',
+  heroText: '从上传体检到压缩转码和下载，所有步骤都收在同一个工作台里，流程更短，结果更稳。',
   start: '\u5f00\u59cb\u4f7f\u7528',
   choose: '\u9009\u62e9\u4f60\u7684\u5a92\u4f53\u5de5\u4f5c\u53f0',
   login: '\u767b\u5f55',
@@ -196,10 +196,10 @@ const copy = {
   ready: '\u5df2\u5c31\u7eea',
   pickWorkbench: '\u9009\u62e9\u4e00\u4e2a\u5de5\u4f5c\u53f0',
   entry: '\u9009\u62e9\u5165\u53e3',
-  flowTitle: '\u540c\u4e00\u5957\u5de5\u4f5c\u53f0\uff0c\u4e09\u79cd\u6587\u4ef6\u3002',
-  flowText: '\u53f3\u8fb9\u9009\u5165\u53e3\uff0c\u8fdb\u53bb\u4e4b\u540e\u5e03\u5c40\u4e0d\u4f1a\u53d8\u3002\u53ea\u6362\u5de5\u5177\u3001\u53c2\u6570\u548c\u63d0\u793a\u3002',
-  quickTitle: '\u5c11\u70b9\u7b49\u5f85\uff0c\u591a\u70b9\u786e\u5b9a\u3002',
-  quickText: '\u754c\u9762\u53ea\u663e\u793a\u5f53\u524d\u5de5\u5177\u9700\u8981\u7684\u9009\u9879\uff0c\u5b8c\u6210\u540e\u76f4\u63a5\u4fdd\u5b58\u3002',
+  flowTitle: '三类素材一套流程',
+  flowText: '视频、图片、音频共用同一套上传、参数和结果视图，只在需要时切换工具细节。',
+  quickTitle: '把等待变成确定性',
+  quickText: '界面只呈现当前工具真正需要的选项，完成后给出清楚的结果摘要和下载入口。',
   needLogin: '\u767b\u5f55\u540e\u5904\u7406',
   browserUpload: '\u6d4f\u89c8\u5668\u4e0a\u4f20',
   download: '\u7ed3\u679c\u4e0b\u8f7d',
@@ -207,9 +207,9 @@ const copy = {
 
 const displayCopy = {
   video: {
-    title: '\u89c6\u9891\u5904\u7406',
+    title: '视频工作台',
     eyebrow: 'VIDEO',
-    intro: '\u538b\u7f29\u3001\u8f6c\u6362\u3001\u88c1\u526a\u3001\u5408\u5e76\uff0c\u4e0a\u4f20\u540e\u76f4\u63a5\u5904\u7406\u3002',
+    intro: '面向短片、录屏和素材包，完成压缩、转码、裁剪与合并。',
     featuredTools: [
       { title: '\u88c1\u526a', icon: 'ph:scissors' },
       { title: '\u8f6c\u6362', icon: 'ph:arrows-left-right' },
@@ -217,9 +217,9 @@ const displayCopy = {
     ],
   },
   image: {
-    title: '\u56fe\u7247\u5904\u7406',
+    title: '图片工作台',
     eyebrow: 'IMAGE',
-    intro: '\u538b\u7f29\u3001\u8f6c\u6362\u3001\u88c1\u526a\u3001\u6539\u5c3a\u5bf8\uff0c\u5e38\u7528\u64cd\u4f5c\u653e\u5728\u4e00\u8d77\u3002',
+    intro: '把网页图、封面和头像的尺寸、格式与体积收在一处处理。',
     featuredTools: [
       { title: '\u88c1\u526a', icon: 'ph:crop' },
       { title: '\u538b\u7f29', icon: 'ph:image-square' },
@@ -227,9 +227,9 @@ const displayCopy = {
     ],
   },
   audio: {
-    title: '\u97f3\u9891\u5904\u7406',
+    title: '音频工作台',
     eyebrow: 'AUDIO',
-    intro: '\u538b\u7f29\u3001\u8f6c\u6362\u3001\u526a\u5207\u3001\u5408\u5e76\u3001\u8c03\u97f3\u91cf\u3002',
+    intro: '整理旁白、配乐和录音片段，快速完成剪切、转码和音量校准。',
     featuredTools: [
       { title: '\u526a\u5207', icon: 'ph:waveform' },
       { title: '\u97f3\u91cf', icon: 'ph:speaker-high' },
@@ -252,9 +252,9 @@ export default {
       revealObserver: null,
       scrollRaf: 0,
       steps: [
-        { index: '01', title: '\u9009\u6587\u4ef6', text: '\u62d6\u8fdb\u4e0a\u4f20\u533a\uff0c\u6216\u4ece\u672c\u5730\u9009\u62e9\u3002' },
-        { index: '02', title: '\u8c03\u53c2\u6570', text: '\u53ea\u770b\u5f53\u524d\u5de5\u5177\u4f1a\u7528\u5230\u7684\u8bbe\u7f6e\u3002' },
-        { index: '03', title: '\u62ff\u7ed3\u679c', text: '\u5904\u7406\u5b8c\u6210\u540e\u4fdd\u5b58\u5230\u672c\u5730\u3002' },
+        { index: '01', title: '导入素材', text: '拖入文件或从本地选择，先让系统读取基础信息。' },
+        { index: '02', title: '校准参数', text: '只展示当前工具相关设置，减少不必要的判断。' },
+        { index: '03', title: '导出结果', text: '处理完成后查看摘要，再把新文件保存到本地。' },
       ],
     }
   },
@@ -462,16 +462,19 @@ export default {
   margin-top: 0.8rem;
   color: var(--text-primary);
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 9vw, 8.6rem);
-  line-height: 0.9;
+  font-size: 6.4rem;
+  font-weight: 850;
+  line-height: 0.92;
+  letter-spacing: 0;
   max-width: 9ch;
+  text-wrap: balance;
 }
 
 .stage-copy p {
   max-width: 30rem;
   margin-top: 1.25rem;
   color: var(--text-secondary);
-  font-size: clamp(1rem, 1.6vw, 1.18rem);
+  font-size: 1.08rem;
   line-height: 1.75;
 }
 
@@ -1113,8 +1116,11 @@ export default {
 .quick-panel h2 {
   color: var(--text-primary);
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 4vw, 3.3rem);
-  line-height: 1.05;
+  font-size: 3rem;
+  font-weight: 820;
+  line-height: 1.08;
+  letter-spacing: 0;
+  text-wrap: balance;
 }
 
 .flow-head p {
@@ -1574,6 +1580,10 @@ export default {
 }
 
 @media (max-width: 1180px) {
+  .stage-copy h1 {
+    font-size: 5.6rem;
+  }
+
   .flow-layout {
     grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1fr);
     gap: 1.5rem;
@@ -1681,7 +1691,7 @@ export default {
 
   .stage-copy h1 {
     max-width: 10ch;
-    font-size: clamp(2.8rem, 16vw, 4.35rem);
+    font-size: 4.15rem;
     line-height: 0.94;
   }
 
@@ -1859,7 +1869,7 @@ export default {
   }
 
   .stage-copy h1 {
-    font-size: clamp(2.55rem, 15vw, 3.85rem);
+    font-size: 3.45rem;
   }
 
   .launch-control {
@@ -1910,7 +1920,7 @@ export default {
 
   .flow-head h2,
   .quick-panel h2 {
-    font-size: clamp(1.65rem, 10vw, 2.35rem);
+    font-size: 2.15rem;
   }
 
   .flow-node-visual {

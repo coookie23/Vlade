@@ -129,9 +129,9 @@ export default {
   --radius-sm: 0.375rem;
   --radius-md: 0.625rem;
   --radius-lg: 1rem;
-  --font-display: 'Noto Serif SC', serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+  --font-display: 'HarmonyOS Sans SC', 'MiSans', 'Alibaba PuHuiTi', 'PingFang SC', 'Microsoft YaHei UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  --font-body: 'Inter', 'HarmonyOS Sans SC', 'MiSans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei UI', sans-serif;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -143,6 +143,7 @@ body {
   line-height: 1.6;
   color: var(--text-primary);
   background: var(--bg);
+  font-feature-settings: 'kern';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

@@ -3,8 +3,8 @@
     <section class="auth-shell">
       <div class="auth-copy">
         <span class="kicker">ACCOUNT / VLADE</span>
-        <h1>{{ user ? '账户已就绪。' : mode === 'login' ? '继续处理你的媒体。' : '创建你的工作台账户。' }}</h1>
-        <p>{{ user ? '回到工作台后就可以上传、体检、处理并保存结果。' : '登录后才能上传处理文件，注册成功会自动进入工作台。' }}</p>
+        <h1>{{ user ? '账户已就绪' : mode === 'login' ? '回到工作台' : '创建账户' }}</h1>
+        <p>{{ user ? '账户状态已同步，可以继续上传、体检、处理和导出文件。' : '登录后保留账户状态，上传、体检和导出流程会回到当前工作台。' }}</p>
 
         <div class="db-card">
           <Icon icon="ph:database" width="22" />
@@ -235,13 +235,15 @@ export default {
 }
 
 .auth-copy h1 {
-  max-width: 11ch;
+  max-width: 14ch;
   margin-top: 1rem;
   color: var(--text-primary);
   font-family: var(--font-display);
-  font-size: clamp(2.6rem, 5vw, 5.2rem);
-  line-height: 0.96;
+  font-size: 4.15rem;
+  font-weight: 840;
+  line-height: 1;
   letter-spacing: 0;
+  text-wrap: balance;
 }
 
 .auth-copy p {

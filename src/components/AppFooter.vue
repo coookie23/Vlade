@@ -5,7 +5,7 @@
         <span class="footer-mark" />
         <span>Vlade</span>
       </router-link>
-      <p>视频、图片、音频处理工具。上传，处理，下载。</p>
+      <p>视频、图片、音频统一处理，上传后完成体检、参数调整与结果导出。</p>
       <div class="footer-links">
         <router-link to="/video">视频</router-link>
         <router-link to="/image">图片</router-link>

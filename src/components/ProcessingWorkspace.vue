@@ -388,7 +388,7 @@ export default {
 .media-switch-link.active { color: var(--bg); border-color: var(--accent); background: var(--accent); box-shadow: 0 10px 26px rgba(212,135,94,0.2); }
 .rail-heading { margin: 1.4rem 0 1rem; }
 .rail-eyebrow, .stage-badge { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--accent); font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.08em; }
-.rail-heading h1 { margin-top: 0.2rem; color: var(--text-primary); font-family: var(--font-display); font-size: 1.7rem; line-height: 1.14; }
+.rail-heading h1 { margin-top: 0.2rem; color: var(--text-primary); font-family: var(--font-display); font-size: 1.7rem; font-weight: 820; line-height: 1.14; letter-spacing: 0; }
 .rail-heading p { margin-top: 0.55rem; color: var(--text-tertiary); font-size: 0.78rem; line-height: 1.7; }
 .rail-nav { display: flex; flex-direction: column; gap: 0.45rem; overflow-y: auto; padding-right: 0.1rem; }
 .tool-pill { position: relative; overflow: hidden; display: grid; grid-template-columns: 2.15rem 1fr; gap: 0.7rem; width: 100%; padding: 0.75rem; border: 1px solid rgba(255,255,255,0.055); border-radius: 12px; color: var(--text-secondary); text-align: left; cursor: pointer; background: rgba(12,11,10,0.24); transition: border-color 0.26s cubic-bezier(0.2,0.9,0.2,1), transform 0.26s cubic-bezier(0.2,0.9,0.2,1), background 0.26s cubic-bezier(0.2,0.9,0.2,1); }
@@ -409,7 +409,7 @@ export default {
 .process-page.is-switching .stage-stats .stat-tile { animation: statSwitch 0.52s cubic-bezier(0.16,1,0.3,1); }
 .process-page.is-switching .stage-stats .stat-tile:nth-child(2) { animation-delay: 0.04s; }
 .process-page.is-switching .stage-stats .stat-tile:nth-child(3) { animation-delay: 0.08s; }
-.stage-copy h2 { margin-top: 0.6rem; color: var(--text-primary); font-family: var(--font-display); font-size: clamp(2rem, 5vw, 4.4rem); line-height: 0.98; }
+.stage-copy h2 { margin-top: 0.6rem; color: var(--text-primary); font-family: var(--font-display); font-size: 4rem; font-weight: 850; line-height: 1; letter-spacing: 0; text-wrap: balance; }
 .stage-copy p { max-width: 28rem; margin-top: 0.85rem; color: var(--text-secondary); font-size: 0.95rem; }
 .stage-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.55rem; }
 .stat-tile { min-height: 82px; padding: 0.8rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.18); }
@@ -664,7 +664,7 @@ export default {
   }
 
   .stage-copy h2 {
-    font-size: clamp(2rem, 13vw, 3.2rem);
+    font-size: 3rem;
   }
 
   .stage-copy p {

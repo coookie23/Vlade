@@ -1,12 +1,25 @@
 import os
-from fastapi import FastAPI, HTTPException
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import video, audio, image, analyze
+from db import close_db_pool, init_db_pool
+from routers import video, audio, image, analyze, auth
+from routers.auth import require_user
 from utils import OUTPUT_DIR
 
-app = FastAPI(title="Vlade API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db_pool(app)
+    try:
+        yield
+    finally:
+        await close_db_pool(app)
+
+
+app = FastAPI(title="Vlade API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -19,10 +32,12 @@ app.include_router(video.router, prefix="/api/video", tags=["video"])
 app.include_router(audio.router, prefix="/api/audio", tags=["audio"])
 app.include_router(image.router, prefix="/api/image", tags=["image"])
 app.include_router(analyze.router, prefix="/api/analyze", tags=["analyze"])
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 
 
 @app.get("/api/download/{filename}")
-async def download(filename: str):
+async def download(filename: str, request: Request):
+    await require_user(request)
     path = os.path.join(OUTPUT_DIR, filename)
     if not os.path.exists(path):
         raise HTTPException(404, "File not found or expired")

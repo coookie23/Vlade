@@ -39,6 +39,7 @@
           <div><h3>选择文件</h3><p>{{ activeTool.multi ? '一次选择多个文件，按顺序处理。' : '拖进来，或从本地选择。' }}</p></div>
         </div>
         <UploadZone
+          v-if="isLoggedIn"
           :key="uploadKey"
           :action="submitFiles"
           :accept="activeTool.accept || suite.accept"
@@ -51,6 +52,20 @@
           @done="onDone"
           @reset="onReset"
         />
+        <div v-else class="auth-gate">
+          <div class="auth-gate-icon">
+            <Icon icon="ph:lock-key" width="24" />
+          </div>
+          <div class="auth-gate-copy">
+            <span>需要登录</span>
+            <h4>登录后才能上传和处理文件</h4>
+            <p>你可以先浏览工具和参数。进入账户后会自动回到这个工作台。</p>
+          </div>
+          <button type="button" @click="goLogin">
+            <Icon icon="ph:sign-in" width="17" />
+            登录后使用
+          </button>
+        </div>
       </section>
 
       <section v-if="analysis || analysisError || analyzing" class="work-card analysis-card">
@@ -153,7 +168,8 @@
 import { Icon } from '@iconify/vue'
 import MediaVisual from './MediaVisual.vue'
 import UploadZone from './UploadZone.vue'
-import { analyzeMedia, downloadUrl, pollProgress, uploadAudio, uploadImage, uploadVideo } from '../api/index.js'
+import { analyzeMedia, downloadFile, pollProgress, uploadAudio, uploadImage, uploadVideo } from '../api/index.js'
+import { AUTH_CHANGE_EVENT, authRouteFor, getStoredUser, hasAuthSession } from '../utils/session.js'
 
 const uploaders = { video: uploadVideo, image: uploadImage, audio: uploadAudio }
 const mediaSwitchItems = [
@@ -186,9 +202,12 @@ export default {
       toolSwitching: false,
       switchTimer: 0,
       pageReady: false,
+      user: getStoredUser(),
     }
   },
   computed: {
+    isLoggedIn() { return Boolean(this.user) && hasAuthSession() },
+    loginRoute() { return authRouteFor(this.$route.fullPath) },
     activeControls() { return this.activeTool.controls || [] },
     activeTips() { return this.activeTool.tips || ['选择文件后开始处理。'] },
     uploadKey() { return `${this.suite.key}-${this.activeTool.id}-${this.uploadKeySeed}` },
@@ -216,13 +235,24 @@ export default {
     suite: { immediate: true, handler(nextSuite) { this.activeTool = nextSuite.tools[0]; this.resetParams(); this.resetWorkspace(false); this.triggerToolMotion(); this.addLog(`进入${nextSuite.title}`) } },
   },
   mounted() {
+    this.syncUser()
+    window.addEventListener(AUTH_CHANGE_EVENT, this.syncUser)
+    window.addEventListener('storage', this.syncUser)
     requestAnimationFrame(() => { this.pageReady = true })
   },
   beforeUnmount() {
     if (this.switchTimer) window.clearTimeout(this.switchTimer)
+    window.removeEventListener(AUTH_CHANGE_EVENT, this.syncUser)
+    window.removeEventListener('storage', this.syncUser)
     this.revokePreview()
   },
   methods: {
+    syncUser() {
+      this.user = getStoredUser()
+    },
+    goLogin() {
+      this.$router.push(this.loginRoute)
+    },
     selectTool(tool) {
       if (tool.id === this.activeTool.id) return
       this.activeTool = tool
@@ -253,12 +283,19 @@ export default {
       if (first && !this.activeTool.multi) this.runAnalyze(first)
     },
     async runAnalyze(file) {
+      if (!this.isLoggedIn) {
+        this.analysisError = '登录后才能读取文件信息'
+        return
+      }
       this.analyzing = true
       try { this.analysis = await analyzeMedia(file); this.addLog('文件体检完成', 'done') }
       catch { this.analysisError = '暂时无法读取文件信息'; this.addLog('文件体检失败', 'error') }
       finally { this.analyzing = false }
     },
     async submitFiles(fileOrFiles) {
+      if (!this.isLoggedIn) {
+        throw new Error('请先登录后再处理文件')
+      }
       this.processingPercent = 0; this.processingSpeed = 0
       this.addLog(`开始${this.activeTool.action}`, 'active')
       const result = await uploaders[this.suite.uploadKind](this.activeTool.endpoint, fileOrFiles, this.cleanParams(), { multi: Boolean(this.activeTool.multi) })
@@ -276,7 +313,11 @@ export default {
               this.cancelPoll = null
               resolve(result)
             },
-            () => { this.addLog('进度获取失败', 'error'); reject(new Error('进度获取失败')) },
+            (error) => {
+              const message = error?.message || '进度获取失败'
+              this.addLog(message, 'error')
+              reject(new Error(message))
+            },
           )
         })
       }
@@ -301,16 +342,21 @@ export default {
       try {
         if (window.showSaveFilePicker) {
           const handle = await window.showSaveFilePicker({ suggestedName: name })
-          const response = await fetch(downloadUrl(name))
-          const blob = await response.blob()
+          const blob = await downloadFile(name)
           const writable = await handle.createWritable()
           await writable.write(blob)
           await writable.close()
         } else {
-          const a = document.createElement('a'); a.href = downloadUrl(name); a.download = name; a.click()
+          const blob = await downloadFile(name)
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = name
+          a.click()
+          window.setTimeout(() => URL.revokeObjectURL(url), 500)
         }
         this.addLog(`保存 ${name}`, 'done')
-      } catch (error) { if (error?.name !== 'AbortError') this.addLog('保存失败', 'error') }
+      } catch (error) { if (error?.name !== 'AbortError') this.addLog(error?.message || '保存失败', 'error') }
     },
     addLog(msg, type = 'info') {
       const now = new Date(); const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
@@ -374,6 +420,14 @@ export default {
 .work-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(circle at 14% 0%, rgba(212,135,94,0.12), transparent 16rem), linear-gradient(120deg, transparent 0 42%, rgba(212,135,94,0.055) 48%, transparent 58%); transform: translateX(-18px); transition: opacity 0.34s cubic-bezier(0.16,1,0.3,1), transform 0.44s cubic-bezier(0.16,1,0.3,1); }
 .work-card:hover::before, .process-page.is-switching .work-card::before { opacity: 0.76; transform: translateX(0); }
 .process-page.is-switching .work-card { animation: cardSwitch 0.46s cubic-bezier(0.16,1,0.3,1); }
+.auth-gate { display: grid; grid-template-columns: 3.35rem minmax(0, 1fr) auto; gap: 0.95rem; align-items: center; min-height: 188px; padding: 1.1rem; border: 1px dashed rgba(212,135,94,0.34); border-radius: 16px; background: radial-gradient(circle at 20% 10%, rgba(212,135,94,0.13), transparent 14rem), linear-gradient(150deg, rgba(255,255,255,0.04), rgba(0,0,0,0.16)), rgba(10,9,8,0.3); overflow: hidden; }
+.auth-gate-icon { width: 3.35rem; height: 3.35rem; display: grid; place-items: center; border-radius: 15px; color: var(--accent); background: linear-gradient(135deg, rgba(212,135,94,0.18), rgba(212,135,94,0.04)), rgba(0,0,0,0.18); box-shadow: inset 0 0 0 1px rgba(212,135,94,0.12); }
+.auth-gate-copy { min-width: 0; }
+.auth-gate-copy span { color: var(--accent); font-family: var(--font-mono); font-size: 0.68rem; }
+.auth-gate-copy h4 { margin-top: 0.2rem; color: var(--text-primary); font-size: 1rem; line-height: 1.35; overflow-wrap: anywhere; }
+.auth-gate-copy p { margin-top: 0.18rem; color: var(--text-tertiary); font-size: 0.78rem; overflow-wrap: anywhere; }
+.auth-gate button { min-height: 2.65rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; border: 0; border-radius: 12px; padding: 0 1rem; color: var(--bg); background: var(--accent); cursor: pointer; font-family: var(--font-body); font-weight: 800; box-shadow: 0 14px 36px rgba(212,135,94,0.18); transition: transform 0.24s cubic-bezier(0.2,0.9,0.2,1), box-shadow 0.24s cubic-bezier(0.2,0.9,0.2,1); }
+.auth-gate button:hover { transform: translateY(-2px); box-shadow: 0 18px 42px rgba(212,135,94,0.24); }
 .card-head { display: flex; gap: 0.65rem; margin-bottom: 1rem; align-items: flex-start; }
 .card-mark { width: 0.55rem; height: 0.55rem; margin-top: 0.45rem; border-radius: 999px; background: var(--accent); box-shadow: 0 0 18px rgba(212,135,94,0.52); }
 .card-head h3 { color: var(--text-primary); font-size: 0.95rem; }
@@ -519,15 +573,226 @@ export default {
 
 @media (max-width: 1180px) { .process-page { grid-template-columns: 220px minmax(0, 1fr); } .side-panel { display: none; } }
 @media (max-width: 820px) {
-  .process-page { min-height: calc(100vh - 3.85rem); display: flex; flex-direction: column; padding: 0.75rem; }
-  .process-page::before { inset: 3.85rem 0 0; }
-  .tool-rail { position: relative; top: auto; height: auto; }
-  .media-switch { display: flex; overflow-x: auto; scrollbar-width: none; }
-  .media-switch::-webkit-scrollbar { display: none; }
-  .media-switch-link { min-width: 5.4rem; }
-  .rail-nav { flex-direction: row; overflow-x: auto; padding-bottom: 0.35rem; }
-  .tool-pill { min-width: 210px; }
+  .process-page {
+    min-height: calc(100vh - 3.65rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem 0.75rem 1.1rem;
+  }
+
+  .process-page::before,
+  .process-page::after {
+    inset: 3.65rem 0 0;
+  }
+
+  .tool-rail {
+    position: sticky;
+    top: 3.65rem;
+    z-index: 25;
+    height: auto;
+    margin: -0.75rem -0.75rem 0;
+    padding: 0.72rem 0.75rem 0.8rem;
+    border-radius: 0 0 18px 18px;
+    background:
+      linear-gradient(180deg, rgba(31,26,22,0.94), rgba(16,14,12,0.86)),
+      radial-gradient(circle at 16% 0%, rgba(212,135,94,0.12), transparent 13rem);
+    box-shadow: 0 16px 42px rgba(0,0,0,0.32);
+  }
+
+  .rail-home,
+  .media-switch {
+    display: none;
+  }
+
+  .rail-heading {
+    margin: 0 0 0.6rem;
+  }
+
+  .rail-heading h1 {
+    font-size: 1.28rem;
+  }
+
+  .rail-heading p {
+    display: none;
+  }
+
+  .rail-nav {
+    flex-direction: row;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding: 0 0 0.18rem;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .rail-nav::-webkit-scrollbar { display: none; }
+
+  .tool-pill {
+    min-width: 11.25rem;
+    min-height: 4.15rem;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.58rem;
+    padding: 0.65rem;
+    scroll-snap-align: start;
+  }
+
+  .tool-pill:hover {
+    transform: none;
+  }
+
+  .tool-pill-icon {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .tool-pill strong,
+  .tool-pill small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tool-pill small {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .top-stage {
+    min-height: auto;
+    padding: 1rem;
+  }
+
+  .stage-copy h2 {
+    font-size: clamp(2rem, 13vw, 3.2rem);
+  }
+
+  .stage-copy p {
+    font-size: 0.86rem;
+    overflow-wrap: anywhere;
+  }
+
   .top-stage, .analysis-grid, .result-card, .control-grid, .mode-note { grid-template-columns: 1fr; }
   .stage-stats { grid-template-columns: repeat(3, 1fr); }
+
+  .stat-tile {
+    min-height: 4.4rem;
+    padding: 0.65rem;
+  }
+
+  .work-card {
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
+  .card-head > div,
+  .analysis-item,
+  .result-card > div,
+  .control-field {
+    min-width: 0;
+  }
+
+  .card-head p,
+  .suggestions li,
+  .mode-note p {
+    overflow-wrap: anywhere;
+  }
+
+  .control-input,
+  .param-chip,
+  .download-strip button,
+  .auth-gate button {
+    min-height: 2.75rem;
+  }
+
+  .auth-gate {
+    grid-template-columns: 1fr;
+    min-height: 168px;
+    padding: 0.95rem;
+  }
+
+  .auth-gate-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 13px;
+  }
+
+  .auth-gate button {
+    width: 100%;
+  }
+
+  .param-chip {
+    padding: 0 0.85rem;
+    font-size: 0.72rem;
+  }
+
+  .preview-shell {
+    min-height: 170px;
+    max-height: 58vh;
+  }
+
+  .preview-shell video,
+  .preview-shell img {
+    max-height: 58vh;
+    object-fit: contain;
+  }
+
+  .preview-shell audio {
+    padding: 1rem;
+  }
+
+  .file-stack {
+    padding: 0.75rem;
+  }
+
+  .file-row {
+    grid-template-columns: 1.4rem minmax(0, 1fr);
+  }
+
+  .file-row small {
+    grid-column: 2;
+  }
+
+  .download-strip {
+    align-items: stretch;
+  }
+
+  .download-strip span {
+    width: 100%;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .process-page {
+    padding-inline: 0.62rem;
+  }
+
+  .tool-rail {
+    margin-inline: -0.62rem;
+    padding-inline: 0.62rem;
+  }
+
+  .stage-stats {
+    gap: 0.4rem;
+  }
+
+  .stat-tile span {
+    font-size: 0.95rem;
+  }
+
+  .stat-tile small {
+    font-size: 0.62rem;
+  }
+
+  .download-strip button {
+    flex: 1 1 100%;
+  }
+
+  .analysis-item strong,
+  .result-card strong {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }
 </style>

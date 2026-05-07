@@ -1,6 +1,7 @@
 import uuid
 import threading
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
+from routers.auth import require_user
 from services.ffmpeg import (
     compress_video, convert_video, trim_video, merge_videos,
     extract_audio, add_subtitle, video_to_gif,
@@ -8,7 +9,7 @@ from services.ffmpeg import (
 )
 from utils import save_upload, output_filename, task_read, task_cleanup, task_start
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_user)])
 
 
 def run_async(fn, *args):

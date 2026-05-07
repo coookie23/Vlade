@@ -30,6 +30,13 @@
               <span class="launch-port" :title="copy.audio"><Icon icon="ph:music-notes" width="15" /></span>
             </span>
           </button>
+          <router-link class="login-control" :to="{ path: '/auth', query: { redirect: '/video' } }">
+            <Icon icon="ph:sign-in" width="18" />
+            <span>
+              <strong>{{ copy.login }}</strong>
+              <small>{{ copy.loginHint }}</small>
+            </span>
+          </router-link>
         </div>
       </div>
 
@@ -110,7 +117,7 @@
               :to="suite.path"
               class="flow-node"
               :class="`flow-node--${index}`"
-              :style="{ '--node-shift': `${index * 8}px`, '--node-lift': `${32 + index * 10}px` }"
+              :style="{ '--node-shift': `${index * 18}px`, '--node-lift': `${36 + index * 12}px` }"
               @mousemove="trackNodeLight"
               data-reveal
             >
@@ -155,7 +162,7 @@
         <h2>{{ copy.quickTitle }}</h2>
         <p>{{ copy.quickText }}</p>
         <div class="panel-tags">
-          <span>{{ copy.noSignup }}</span>
+          <span>{{ copy.needLogin }}</span>
           <span>{{ copy.browserUpload }}</span>
           <span>{{ copy.download }}</span>
         </div>
@@ -179,6 +186,8 @@ const copy = {
   heroText: '\u4e0a\u4f20\u6587\u4ef6\uff0c\u9009\u62e9\u64cd\u4f5c\uff0c\u5b8c\u6210\u540e\u4e0b\u8f7d\u3002\u89c6\u9891\u3001\u56fe\u7247\u3001\u97f3\u9891\u90fd\u5728\u4e00\u4e2a\u754c\u9762\u91cc\u3002',
   start: '\u5f00\u59cb\u4f7f\u7528',
   choose: '\u9009\u62e9\u4f60\u7684\u5a92\u4f53\u5de5\u4f5c\u53f0',
+  login: '\u767b\u5f55',
+  loginHint: '\u4e0a\u4f20\u524d\u9700\u8981\u8d26\u6237',
   video: '\u89c6\u9891',
   image: '\u56fe\u7247',
   audio: '\u97f3\u9891',
@@ -191,7 +200,7 @@ const copy = {
   flowText: '\u53f3\u8fb9\u9009\u5165\u53e3\uff0c\u8fdb\u53bb\u4e4b\u540e\u5e03\u5c40\u4e0d\u4f1a\u53d8\u3002\u53ea\u6362\u5de5\u5177\u3001\u53c2\u6570\u548c\u63d0\u793a\u3002',
   quickTitle: '\u5c11\u70b9\u7b49\u5f85\uff0c\u591a\u70b9\u786e\u5b9a\u3002',
   quickText: '\u754c\u9762\u53ea\u663e\u793a\u5f53\u524d\u5de5\u5177\u9700\u8981\u7684\u9009\u9879\uff0c\u5b8c\u6210\u540e\u76f4\u63a5\u4fdd\u5b58\u3002',
-  noSignup: '\u65e0\u9700\u6ce8\u518c',
+  needLogin: '\u767b\u5f55\u540e\u5904\u7406',
   browserUpload: '\u6d4f\u89c8\u5668\u4e0a\u4f20',
   download: '\u7ed3\u679c\u4e0b\u8f7d',
 }
@@ -262,8 +271,8 @@ export default {
         '--flow-progress': progress.toFixed(3),
         '--flow-meter-width': `${progress * 100}%`,
         '--flow-track-shift': `${progress * 14}px`,
-        '--flow-window-shift': `${progress * -12}px`,
-        '--flow-window-tilt': `${(progress - 0.5) * -1.6}deg`,
+        '--flow-window-shift': `${progress * -18}px`,
+        '--flow-window-tilt': `${(progress - 0.5) * -3}deg`,
         '--flow-image-scale': (1.02 + progress * 0.08).toFixed(3),
         '--flow-grid-opacity': (0.24 + progress * 0.36).toFixed(3),
         '--flow-grid-shift': `${progress * 18}px`,
@@ -502,6 +511,53 @@ export default {
     border-color 0.32s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1),
     background 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-control {
+  position: relative;
+  min-height: 3.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(212, 135, 94, 0.26);
+  border-radius: 16px;
+  color: var(--text-primary);
+  text-decoration: none;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(212,135,94,0.14), transparent 6rem),
+    rgba(10, 9, 8, 0.34);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-control svg {
+  color: var(--accent);
+}
+
+.login-control span {
+  display: grid;
+  line-height: 1.1;
+}
+
+.login-control strong {
+  font-size: 0.86rem;
+}
+
+.login-control small {
+  color: var(--text-tertiary);
+  font-size: 0.68rem;
+}
+
+.login-control:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212,135,94,0.48);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(212,135,94,0.2), transparent 7rem),
+    rgba(20, 17, 14, 0.5);
 }
 
 .launch-control::before {
@@ -777,11 +833,24 @@ export default {
 }
 
 .flow-section {
-  min-height: 108vh;
-  padding-top: clamp(3rem, 7vw, 7rem);
-  padding-bottom: clamp(3rem, 7vw, 7rem);
+  position: relative;
+  isolation: isolate;
+  min-height: 120vh;
   scroll-margin-top: 5.2rem;
   transition: filter 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.flow-section::before {
+  content: '';
+  position: absolute;
+  inset: -5rem 0 auto;
+  z-index: -1;
+  height: 32rem;
+  pointer-events: none;
+  opacity: 0.48;
+  background:
+    linear-gradient(102deg, transparent 0 18%, rgba(212,135,94,0.075) 18% 42%, transparent 42% 100%),
+    radial-gradient(circle at 9% 34%, rgba(212,135,94,0.11), transparent 19rem);
 }
 
 .flow-section--focus .flow-head,
@@ -795,39 +864,24 @@ export default {
 }
 
 .flow-layout {
-  position: relative;
   display: grid;
-  grid-template-columns: minmax(300px, 0.52fr) minmax(0, 1fr);
-  gap: clamp(1.4rem, 3.2vw, 3.25rem);
+  grid-template-columns: minmax(360px, 44vw) minmax(520px, 1fr);
+  gap: clamp(1.1rem, 3.2vw, 3.6rem);
   align-items: start;
-  max-width: 1500px;
-  margin: 0 auto;
-}
-
-.flow-layout::before {
-  content: '';
-  position: absolute;
-  inset: -2.5rem -1.5rem -2rem;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.62;
-  background:
-    radial-gradient(circle at 33% 22%, rgba(212,135,94,0.13), transparent 21rem),
-    linear-gradient(115deg, rgba(255,255,255,0.025), transparent 42%);
 }
 
 .flow-visual {
   position: sticky;
-  top: 5.2rem;
-  min-height: 540px;
-  padding-top: clamp(2.4rem, 4vw, 4.3rem);
+  top: 5rem;
+  min-height: 620px;
+  padding-top: clamp(0rem, 2vw, 1.4rem);
 }
 
 .visual-window {
   position: relative;
-  min-height: clamp(430px, 54vw, 560px);
+  min-height: 560px;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 22px;
   border: 1px solid rgba(255, 255, 255, 0.075);
   background:
     radial-gradient(circle at 22% 14%, rgba(212, 135, 94, 0.13), transparent 18rem),
@@ -836,6 +890,7 @@ export default {
   transform:
     translateY(var(--flow-window-shift))
     rotate(var(--flow-window-tilt));
+  transform-origin: 42% 30%;
 }
 
 .visual-window::before {
@@ -853,10 +908,10 @@ export default {
 
 .visual-window img {
   width: 100%;
-  height: clamp(470px, 58vw, 620px);
+  height: 620px;
   display: block;
   object-fit: cover;
-  object-position: 52% center;
+  object-position: 56% center;
   filter: saturate(0.72) brightness(0.72);
   transform: scale(var(--flow-image-scale));
 }
@@ -873,16 +928,16 @@ export default {
 .lab-topbar {
   position: absolute;
   z-index: 5;
-  top: 0.9rem;
-  left: 0.9rem;
-  right: 0.9rem;
+  top: 1rem;
+  left: 1rem;
+  right: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: 2.7rem;
   padding: 0 0.9rem;
   border: 1px solid rgba(255, 255, 255, 0.075);
-  border-radius: 13px;
+  border-radius: 14px;
   color: var(--text-tertiary);
   background: rgba(9, 8, 7, 0.58);
   backdrop-filter: blur(16px);
@@ -911,7 +966,7 @@ export default {
 
 .visual-grid {
   position: absolute;
-  inset: 0.9rem;
+  inset: 1rem;
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -934,10 +989,10 @@ export default {
   grid-template-columns: auto 1fr;
   gap: 0.18rem 0.5rem;
   align-items: center;
-  min-width: 9.8rem;
-  padding: 0.66rem 0.74rem;
+  min-width: 11.4rem;
+  padding: 0.72rem 0.82rem;
   border: 1px solid rgba(255, 255, 255, 0.075);
-  border-radius: 13px;
+  border-radius: 14px;
   color: var(--text-primary);
   background:
     radial-gradient(circle at 14% 18%, rgba(212,135,94,0.14), transparent 5.5rem),
@@ -968,28 +1023,29 @@ export default {
 }
 
 .lab-chip--format {
-  left: 1.05rem;
-  top: 4.7rem;
+  left: 1.25rem;
+  top: 5rem;
 }
 
 .lab-chip--queue {
-  right: 1.05rem;
-  bottom: 6.55rem;
-  min-width: 8.7rem;
+  right: 1.25rem;
+  bottom: 7.1rem;
+  min-width: 9.6rem;
 }
 
 .visual-console {
   position: absolute;
+  z-index: 3;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
   z-index: 5;
-  left: 0.9rem;
-  right: 0.9rem;
-  bottom: 0.9rem;
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 0.35rem 0.65rem;
   align-items: center;
   padding: 1rem;
-  border-radius: 15px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(10, 9, 8, 0.68);
   backdrop-filter: blur(18px);
@@ -1043,12 +1099,14 @@ export default {
 }
 
 .flow-content {
-  padding-top: clamp(0.6rem, 2.2vw, 1.9rem);
+  padding-top: clamp(1.2rem, 5.4vw, 4.2rem);
+  margin-left: clamp(-2.4rem, -2.4vw, -0.9rem);
 }
 
 .flow-head {
-  max-width: 46rem;
-  margin: 0 0 1.25rem clamp(0.45rem, 2.2vw, 2rem);
+  max-width: 40rem;
+  margin-bottom: 1.15rem;
+  padding-left: clamp(0rem, 1.6vw, 1.1rem);
 }
 
 .flow-head h2,
@@ -1070,7 +1128,6 @@ export default {
   position: relative;
   display: grid;
   gap: 0.9rem;
-  padding-left: clamp(0rem, 1vw, 0.7rem);
 }
 
 .flow-track::before {
@@ -1093,14 +1150,14 @@ export default {
   --node-y: 50%;
   position: relative;
   isolation: isolate;
-  min-height: 192px;
+  min-height: 210px;
   display: grid;
-  grid-template-columns: clamp(190px, 24vw, 248px) minmax(0, 1fr) 2rem;
+  grid-template-columns: 260px minmax(0, 1fr) 2rem;
   align-items: end;
-  gap: clamp(0.9rem, 1.8vw, 1.15rem);
-  width: min(100%, 820px);
-  padding: 0.86rem;
-  border-radius: 17px;
+  gap: 1.2rem;
+  width: min(100%, 850px);
+  padding: 1rem;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.075);
   overflow: hidden;
   text-decoration: none;
@@ -1108,7 +1165,7 @@ export default {
     radial-gradient(circle at var(--node-x) var(--node-y), rgba(255, 226, 202, 0.16), transparent 12rem),
     radial-gradient(circle at 18% 10%, rgba(212, 135, 94, 0.12), transparent 16rem),
     linear-gradient(145deg, rgba(42, 36, 30, 0.74), rgba(13, 12, 10, 0.78));
-  box-shadow: 0 18px 64px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.28);
   transition:
     transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
     border-color 0.32s cubic-bezier(0.16, 1, 0.3, 1),
@@ -1116,23 +1173,22 @@ export default {
 }
 
 .flow-node--0 {
-  margin-left: clamp(0rem, 1.6vw, 1.2rem);
+  margin-left: clamp(0rem, 1.5vw, 1rem);
 }
 
 .flow-node--1 {
-  width: min(100%, 850px);
+  width: min(100%, 880px);
 }
 
 .flow-node--2 {
-  width: min(100%, 790px);
-  margin-left: clamp(0rem, 2.8vw, 2.1rem);
+  margin-left: clamp(0rem, 3vw, 2rem);
 }
 
 .flow-action-stack {
   position: absolute;
   z-index: 4;
-  top: 0.72rem;
-  left: clamp(9.8rem, 20vw, 12.1rem);
+  top: 0.9rem;
+  left: 12.6rem;
   width: 14rem;
   height: 7rem;
   pointer-events: none;
@@ -1219,17 +1275,17 @@ export default {
 
 .flow-node:hover .flow-action-card:nth-child(1),
 .flow-section--focus .flow-action-card:nth-child(1) {
-  transform: translate(0.15rem, -1.1rem) rotate(-3deg) scale(1);
+  transform: translate(0.2rem, -1.25rem) rotate(-3deg) scale(1);
 }
 
 .flow-node:hover .flow-action-card:nth-child(2),
 .flow-section--focus .flow-action-card:nth-child(2) {
-  transform: translate(1.45rem, 0.12rem) rotate(2deg) scale(1);
+  transform: translate(1.75rem, 0.15rem) rotate(2deg) scale(1);
 }
 
 .flow-node:hover .flow-action-card:nth-child(3),
 .flow-section--focus .flow-action-card:nth-child(3) {
-  transform: translate(0.62rem, 1.42rem) rotate(-1deg) scale(1);
+  transform: translate(0.72rem, 1.58rem) rotate(-1deg) scale(1);
 }
 
 .flow-node::before {
@@ -1294,8 +1350,8 @@ export default {
   position: relative;
   z-index: 2;
   width: 100%;
-  height: 166px;
-  border-radius: 12px;
+  height: 180px;
+  border-radius: 13px;
   transition: transform 0.72s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1319,7 +1375,7 @@ export default {
 .flow-node-copy h3 {
   margin-top: 0.35rem;
   color: var(--text-primary);
-  font-size: clamp(1.12rem, 1.7vw, 1.34rem);
+  font-size: 1.35rem;
 }
 
 .flow-node-copy p {
@@ -1517,6 +1573,26 @@ export default {
   }
 }
 
+@media (max-width: 1180px) {
+  .flow-layout {
+    grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  .flow-content {
+    margin-left: -0.7rem;
+  }
+
+  .flow-node {
+    grid-template-columns: 220px minmax(0, 1fr) 2rem;
+  }
+
+  .flow-node--0,
+  .flow-node--2 {
+    margin-left: 0;
+  }
+}
+
 @media (max-width: 980px) {
   .entry-stage,
   .flow-layout,
@@ -1534,8 +1610,6 @@ export default {
 
   .flow-section {
     min-height: auto;
-    padding-top: 2rem;
-    padding-bottom: 2.5rem;
   }
 
   .flow-visual {
@@ -1547,7 +1621,6 @@ export default {
 
   .visual-window {
     min-height: 420px;
-    transform: none;
   }
 
   .visual-window img {
@@ -1568,11 +1641,12 @@ export default {
   }
 
   .flow-content {
+    margin-left: 0;
     padding-top: 0;
   }
 
   .flow-head {
-    margin-left: 0;
+    padding-left: 0;
   }
 
   .flow-action-stack {
@@ -1581,18 +1655,45 @@ export default {
 }
 
 @media (max-width: 680px) {
+  .home {
+    overflow-x: hidden;
+  }
+
   .entry-stage,
   .flow-section,
   .details-band {
-    padding: 1.25rem;
+    padding: 1.1rem;
   }
 
   .entry-stage {
     min-height: auto;
+    gap: 1.35rem;
+    align-items: start;
+    padding-top: 1.35rem;
+  }
+
+  .stage-copy {
+    max-width: 100%;
+    transform: none;
+    opacity: 1;
+    animation: none;
   }
 
   .stage-copy h1 {
-    font-size: clamp(3rem, 18vw, 5rem);
+    max-width: 10ch;
+    font-size: clamp(2.8rem, 16vw, 4.35rem);
+    line-height: 0.94;
+  }
+
+  .stage-copy p {
+    max-width: 100%;
+    font-size: 0.95rem;
+    line-height: 1.68;
+    overflow-wrap: anywhere;
+  }
+
+  .stage-actions {
+    margin-top: 1.45rem;
   }
 
   .launch-control {
@@ -1601,6 +1702,12 @@ export default {
     min-height: 5.8rem;
     padding: 0.72rem 5.25rem 0.72rem 0.72rem;
     border-radius: 22px;
+  }
+
+  .login-control {
+    width: 100%;
+    justify-content: center;
+    min-height: 3.1rem;
   }
 
   .launch-control::before,
@@ -1634,7 +1741,9 @@ export default {
   }
 
   .media-stack {
-    min-height: 360px;
+    min-height: 330px;
+    width: 100%;
+    overflow: hidden;
   }
 
   .preview-frame--main {
@@ -1650,13 +1759,43 @@ export default {
     bottom: 12%;
   }
 
+  .process-chip {
+    min-height: 2.35rem;
+    padding: 0 0.72rem;
+    font-size: 0.72rem;
+  }
+
+  .flow-section {
+    scroll-margin-top: 4.1rem;
+  }
+
+  .visual-window {
+    min-height: 340px;
+    border-radius: 18px;
+  }
+
+  .visual-window img {
+    height: 390px;
+  }
+
   .flow-node {
     grid-template-columns: 1fr;
     min-height: auto;
+    padding: 0.85rem;
+    border-radius: 16px;
   }
 
   .flow-node-visual {
     height: 170px;
+  }
+
+  .flow-node-copy {
+    min-width: 0;
+  }
+
+  .flow-node-copy h3,
+  .flow-node-copy p {
+    overflow-wrap: anywhere;
   }
 
   .lab-topbar {
@@ -1683,6 +1822,103 @@ export default {
     position: absolute;
     top: 1rem;
     right: 1rem;
+  }
+
+  .details-band {
+    gap: 0.85rem;
+  }
+
+  .step-line {
+    grid-template-columns: 2.6rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding: 0.9rem;
+  }
+
+  .quick-panel {
+    min-height: 240px;
+    padding: 1.15rem;
+  }
+
+  .panel-tags span {
+    min-height: 2.35rem;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .entry-stage,
+  .flow-section,
+  .details-band {
+    padding-inline: 0.82rem;
+  }
+
+  .kicker,
+  .flow-head span {
+    font-size: 0.64rem;
+  }
+
+  .stage-copy h1 {
+    font-size: clamp(2.55rem, 15vw, 3.85rem);
+  }
+
+  .launch-control {
+    min-height: 5.25rem;
+    gap: 0.72rem;
+    padding-right: 4.7rem;
+  }
+
+  .launch-core {
+    width: 3.55rem;
+    height: 3.55rem;
+  }
+
+  .launch-copy {
+    min-width: 0;
+  }
+
+  .launch-copy strong,
+  .launch-copy small {
+    overflow-wrap: anywhere;
+  }
+
+  .media-stack {
+    min-height: 292px;
+  }
+
+  .preview-frame--float,
+  .process-chip {
+    display: none;
+  }
+
+  .visual-window {
+    min-height: 300px;
+  }
+
+  .visual-window img {
+    height: 340px;
+  }
+
+  .lab-chip {
+    max-width: calc(100% - 1.8rem);
+  }
+
+  .lab-chip--queue {
+    left: 0.9rem;
+    right: auto;
+  }
+
+  .flow-head h2,
+  .quick-panel h2 {
+    font-size: clamp(1.65rem, 10vw, 2.35rem);
+  }
+
+  .flow-node-visual {
+    height: 150px;
+  }
+
+  .step-line {
+    grid-template-columns: 1fr;
   }
 }
 </style>

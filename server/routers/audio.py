@@ -1,11 +1,12 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
+from routers.auth import require_user
 from services.ffmpeg import (
     compress_audio, convert_audio, trim_audio, merge_audios,
     change_volume, denoise_audio,
 )
 from utils import save_upload, output_filename
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_user)])
 
 
 @router.post("/compress")

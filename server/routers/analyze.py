@@ -2,12 +2,13 @@ import os
 from pathlib import Path
 
 import ffmpeg
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from PIL import Image
 
+from routers.auth import require_user
 from utils import save_upload
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_user)])
 
 VIDEO_EXTS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".flv", ".wmv", ".m4v", ".3gp", ".ts"}
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".avif", ".gif", ".bmp"}

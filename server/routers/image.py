@@ -1,10 +1,11 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Depends, UploadFile, File, Form, HTTPException
+from routers.auth import require_user
 from services.image import (
     compress_image, convert_image, crop_image, resize_image, add_watermark,
 )
 from utils import save_upload, output_filename
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_user)])
 
 
 @router.post("/compress")

@@ -236,7 +236,7 @@ export default {
 .done .zone-icon { color: #66c28c; }
 .error .zone-icon { color: #de6b5f; }
 .zone-copy { min-width: 0; }
-.zone-copy h4 { color: var(--text-primary); font-size: 1rem; line-height: 1.35; overflow-wrap: anywhere; }
+.zone-copy h4 { max-width: 100%; color: var(--text-primary); font-size: 1rem; line-height: 1.35; overflow-wrap: anywhere; }
 .zone-copy p, .zone-copy span { display: block; color: var(--text-tertiary); font-size: 0.78rem; margin-top: 0.2rem; }
 .inline-action { margin-top: 0.65rem; border: 0; color: var(--accent); background: transparent; cursor: pointer; font-size: 0.76rem; padding: 0; }
 .progress-track { position: relative; z-index: 1; height: 3px; margin-top: 1.2rem; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,0.08); }
@@ -287,8 +287,50 @@ export default {
   }
 }
 @media (max-width: 560px) {
-  .upload-zone { min-height: 170px; padding: 0.95rem; }
-  .zone-grid { grid-template-columns: 1fr; }
-  .upload-actions { flex-direction: column; }
+  .upload-zone {
+    min-height: 168px;
+    padding: 0.95rem;
+  }
+
+  .zone-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .zone-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 13px;
+  }
+
+  .zone-copy h4 {
+    display: -webkit-box;
+    max-width: 100%;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .zone-copy p,
+  .zone-copy span {
+    overflow-wrap: anywhere;
+  }
+
+  .inline-action {
+    min-height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    padding-right: 0.8rem;
+  }
+
+  .upload-actions {
+    flex-direction: column;
+  }
+
+  .submit-btn,
+  .reset-btn {
+    width: 100%;
+    min-height: 2.9rem;
+  }
 }
 </style>

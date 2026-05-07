@@ -155,7 +155,10 @@ body {
 }
 
 @media (max-width: 820px) {
-  .app-shell { padding-top: 3.85rem; }
+  .app-shell {
+    padding-top: 3.65rem;
+    padding-bottom: calc(4.35rem + env(safe-area-inset-bottom));
+  }
 }
 
 /* Boot layer */

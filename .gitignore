@@ -57,3 +57,6 @@ desktop.ini
 
 # Local Netlify folder
 .netlify
+
+# Local backups
+_backups/

@@ -74,7 +74,13 @@
               <span>MEDIA CHECK</span>
               <b>{{ progressLabel }}</b>
             </div>
-            <img src="https://picsum.photos/seed/vlade-left-lab/760/940" alt="" />
+            <img
+              src="https://picsum.photos/seed/vlade-left-lab/640/800"
+              alt=""
+              width="640"
+              height="800"
+              loading="lazy"
+            />
             <div class="visual-scan" />
             <div class="visual-grid">
               <span v-for="i in 18" :key="i" />
@@ -175,7 +181,6 @@
 
 <script>
 import { Icon } from '@iconify/vue'
-import { gsap } from 'gsap'
 import AppFooter from '../components/AppFooter.vue'
 import MediaVisual from '../components/MediaVisual.vue'
 import { suiteList } from '../data/toolSuites.js'
@@ -249,6 +254,7 @@ export default {
       flowFocus: false,
       flowFocusTimer: 0,
       launchMotion: null,
+      gsapApi: null,
       revealObserver: null,
       scrollRaf: 0,
       steps: [
@@ -309,8 +315,14 @@ export default {
       section.scrollIntoView({ behavior: 'smooth', block: 'start' })
       this.flowFocusTimer = window.setTimeout(() => { this.flowFocus = false }, 1700)
     },
-    initLaunchMotion() {
+    async initLaunchMotion() {
       if (this.launchMotion || !this.$refs.launchButton || !window.matchMedia('(pointer: fine)').matches) return
+      // GSAP 只在按钮交互时加载，避免首屏 JS 直接变重。
+      if (!this.gsapApi) {
+        const module = await import('gsap')
+        this.gsapApi = module.gsap
+      }
+      const gsap = this.gsapApi
       const root = this.$refs.launchButton
       const core = root.querySelector('.launch-core')
       const copyNode = root.querySelector('.launch-copy')

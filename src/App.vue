@@ -9,9 +9,11 @@
     </div>
     <div class="bg-photo-layer">
       <img
-        src="https://picsum.photos/seed/vlade-global-workspace/1920/1080"
+        src="https://picsum.photos/seed/vlade-global-workspace/1280/720"
         alt=""
         class="bg-photo"
+        width="1280"
+        height="720"
       />
       <div class="bg-gradient-mesh" />
     </div>
@@ -38,11 +40,15 @@ export default {
   },
   methods: {
     initParticles() {
+      // 用户系统开启减少动态效果时，不启动背景动画。
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
       const canvas = this.$refs.particles
       if (!canvas) return
       const ctx = canvas.getContext('2d')
       let W, H, particles
-      const COUNT = 60
+      // 粒子数量降低，减少每帧计算量，尤其照顾低配电脑。
+      const COUNT = window.innerWidth < 820 ? 0 : 28
+      if (!COUNT) return
 
       const resize = () => {
         W = canvas.width = window.innerWidth
@@ -96,6 +102,11 @@ export default {
       }
 
       const animate = () => {
+        if (document.hidden) {
+          requestAnimationFrame(animate)
+          return
+        }
+
         ctx.clearRect(0, 0, W, H)
         for (const p of particles) { p.update(); p.draw() }
         drawLines()

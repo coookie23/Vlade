@@ -1,6 +1,6 @@
 <template>
   <div class="media-visual" :class="[`media-visual--${suite.key}`, `media-visual--${variant}`]">
-    <img :src="suite.visual" alt="" />
+    <img :src="suite.visual" alt="" loading="lazy" />
     <div class="visual-shade" />
 
     <div v-if="suite.key === 'video'" class="video-ui">

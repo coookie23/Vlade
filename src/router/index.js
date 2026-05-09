@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import VideoView from '../views/VideoView.vue'
-import AudioView from '../views/AudioView.vue'
-import ImageView from '../views/ImageView.vue'
-import AuthView from '../views/AuthView.vue'
+
+// 路由懒加载：用户进入哪个页面，才下载哪个页面的代码，减轻首屏压力。
+const Home = () => import('../views/Home.vue')
+const VideoView = () => import('../views/VideoView.vue')
+const AudioView = () => import('../views/AudioView.vue')
+const ImageView = () => import('../views/ImageView.vue')
+const AuthView = () => import('../views/AuthView.vue')
 
 const routes = [
   { path: '/', name: 'Home', component: Home },
